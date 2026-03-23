@@ -58,13 +58,20 @@ export class EventsDatasourceImpl implements EventsDatasource {
                 throw CustomError.unauthorized('You do not have permission to edit this event');
             }
 
-            const updatedEvent = await EventModel.findByIdAndUpdate(event.id, {
+            const existingEventEntity = EventsMapper.EventEntityFromObject(existingEvent);
+            const updatedEventEntity = existingEventEntity.cloneWith({
                 title: event.title,
                 notes: event.notes,
                 start: event.start,
-                bgColor: event.bgColor,
                 end: event.end,
-            }, { returnDocument: 'after' });
+                bgColor: event.bgColor,
+            });
+
+            const updatedEvent = await EventModel.findByIdAndUpdate(
+                event.id,
+                updatedEventEntity.toUpdateObject(),
+                { returnDocument: 'after' }
+            );
             if (!updatedEvent) throw CustomError.notFound('Event not found after update');
 
             await updatedEvent.populate('user', 'name');
