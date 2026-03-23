@@ -14,6 +14,8 @@ export * from './dtos/events/dto-events-product/types-dto-events-product/delete-
 export * from './dtos/events/dto-events-factory/types-dto-events-factory/create-event-dto.factory';
 export * from './dtos/events/dto-events-factory/types-dto-events-factory/update-event-dto.factory';
 export * from './dtos/events/dto-events-factory/types-dto-events-factory/delete-event-dto.factory';
+export * from './dtos/operation-dto-abstract-factory/operation-dto-abstract.factory';
+export * from './dtos/operation-dto-abstract-factory/types-operation-dto-abstract-factory/create-operation-dto.factory';
 export * from './entities/user.entity';
 export * from './entities/events.entity';
 export * from './errors/custom.error';

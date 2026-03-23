@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { AuthRepository, CustomError, LoginUser, LoginUserDtoFactory, RegisterUser, RegisterUserDtoFactory, RenewToken } from '../../domain';
+import { AuthRepository, CreateOperationDtoFactory, CustomError, LoginUser, LoginUserDtoFactory, RegisterUser, RenewToken } from '../../domain';
 
 export class AuthController {
 
-    private readonly registerUserDtoFactory = new RegisterUserDtoFactory();
+    private readonly createOperationDtoFactory = new CreateOperationDtoFactory();
     private readonly loginUserDtoFactory = new LoginUserDtoFactory();
 
     constructor(
@@ -19,7 +19,9 @@ export class AuthController {
     };
 
     registerUser = (req: Request, res: Response) => {
-        const registerUserDto = this.registerUserDtoFactory.create(req.body);
+        const registerUserDtoFactory = this.createOperationDtoFactory.createDtoFactory().registerUser();
+
+        const registerUserDto = registerUserDtoFactory.create(req.body);
 
         new RegisterUser(this.authRepository).execute(registerUserDto!)
             .then(data => res.status(201).json(data))

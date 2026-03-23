@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { CreateEvent, CreateEventDtoFactory, CustomError, DeleteEvent, DeleteEventDtoFactory, GetEvents, UpdateEvent, UpdateEventDtoFactory } from '../../domain';
+import { CreateEvent, CreateOperationDtoFactory, CustomError, DeleteEvent, DeleteEventDtoFactory, GetEvents, UpdateEvent, UpdateEventDtoFactory } from '../../domain';
 import { EventsRepository } from '../../domain/repositories/events.repository';
 
 export class EventsController {
 
-    private readonly createEventDtoFactory = new CreateEventDtoFactory();
+    private readonly createOperationDtoFactory = new CreateOperationDtoFactory();
     private readonly updateEventDtoFactory = new UpdateEventDtoFactory();
     private readonly deleteEventDtoFactory = new DeleteEventDtoFactory();
 
@@ -29,7 +29,9 @@ export class EventsController {
     }
 
     createEvent = (req: Request, res: Response) => {
-        const createEventDto = this.createEventDtoFactory.create(req);
+        const createEventDtoFactory = this.createOperationDtoFactory.createDtoFactory().createEvent();
+
+        const createEventDto = createEventDtoFactory.create(req);
 
         new CreateEvent(this.eventsRepository).createEvent(createEventDto)
             .then((event) => res.status(201).json({ event }))
