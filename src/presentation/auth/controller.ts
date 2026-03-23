@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { AuthRepository, CustomError, LoginUser, LoginUserDto, RegisterUser, RegisterUserDto, RenewToken } from '../../domain';
-import { UserModel } from '../../data/mongodb';
+import { AuthRepository, CustomError, LoginUser, LoginUserDtoFactory, RegisterUser, RegisterUserDtoFactory, RenewToken } from '../../domain';
 
 export class AuthController {
 
+    private readonly registerUserDtoFactory = new RegisterUserDtoFactory();
+    private readonly loginUserDtoFactory = new LoginUserDtoFactory();
 
     constructor(
         private readonly authRepository: AuthRepository,
@@ -18,7 +19,7 @@ export class AuthController {
     };
 
     registerUser = (req: Request, res: Response) => {
-        const registerUserDto = RegisterUserDto.create(req.body);
+        const registerUserDto = this.registerUserDtoFactory.create(req.body);
 
         new RegisterUser(this.authRepository).execute(registerUserDto!)
             .then(data => res.status(201).json(data))
@@ -26,7 +27,7 @@ export class AuthController {
     }
 
     loginUser = (req: Request, res: Response) => {
-        const loginUserDto = LoginUserDto.create(req.body);
+        const loginUserDto = this.loginUserDtoFactory.create(req.body);
 
         new LoginUser(this.authRepository).execute(loginUserDto!)
             .then(data => res.status(201).json(data))
