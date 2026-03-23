@@ -1,8 +1,7 @@
-import { EventsEntity, EventsRepository } from "../..";
-import { Request } from 'express';
+import { CreateEventDto, EventsEntity, EventsRepository } from "../..";
 
 interface CreateEventUseCase {
-    createEvent(event: EventsEntity): Promise<EventsEntity>;
+    createEvent(event: CreateEventDto): Promise<EventsEntity>;
 }
 
 export class CreateEvent implements CreateEventUseCase {
@@ -10,7 +9,7 @@ export class CreateEvent implements CreateEventUseCase {
         private readonly eventsRepository: EventsRepository,
     ) { }
 
-    async createEvent(event: EventsEntity): Promise<EventsEntity> {
+    async createEvent(event: CreateEventDto): Promise<EventsEntity> {
 
         const newEvent = await this.eventsRepository.createEvent(event);
 

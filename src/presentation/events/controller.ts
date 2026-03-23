@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
-import { CreateEvent, CustomError, DeleteEvent, GetEvents, UpdateEvent } from '../../domain';
+import { CreateEvent, CreateEventDtoFactory, CustomError, DeleteEvent, DeleteEventDtoFactory, GetEvents, UpdateEvent, UpdateEventDtoFactory } from '../../domain';
 import { EventsRepository } from '../../domain/repositories/events.repository';
 
 export class EventsController {
+
+    private readonly createEventDtoFactory = new CreateEventDtoFactory();
+    private readonly updateEventDtoFactory = new UpdateEventDtoFactory();
+    private readonly deleteEventDtoFactory = new DeleteEventDtoFactory();
 
     constructor(
         private readonly eventsRepository: EventsRepository,
@@ -25,19 +29,25 @@ export class EventsController {
     }
 
     createEvent = (req: Request, res: Response) => {
-        new CreateEvent(this.eventsRepository).createEvent(req.body)
+        const createEventDto = this.createEventDtoFactory.create(req);
+
+        new CreateEvent(this.eventsRepository).createEvent(createEventDto)
             .then((event) => res.status(201).json({ event }))
             .catch((error) => this.handleError(error, res));
     }
 
     updateEvent = (req: Request, res: Response) => {
-        new UpdateEvent(this.eventsRepository).updateEvent(req)
+        const updateEventDto = this.updateEventDtoFactory.create(req);
+
+        new UpdateEvent(this.eventsRepository).updateEvent(updateEventDto)
             .then((event) => res.status(200).json({ event }))
             .catch((error) => this.handleError(error, res));
     }
 
     deleteEvent = (req: Request, res: Response) => {
-        new DeleteEvent(this.eventsRepository).deleteEvent(req)
+        const deleteEventDto = this.deleteEventDtoFactory.create(req);
+
+        new DeleteEvent(this.eventsRepository).deleteEvent(deleteEventDto)
             .then((event) => res.status(200).json({ event }))
             .catch((error) => this.handleError(error, res));
     }

@@ -1,8 +1,7 @@
-import { EventDelete, EventsEntity, EventsRepository } from "../..";
-import { Request } from "express";
+import { DeleteEventDto, EventDelete, EventsRepository } from "../..";
 
 interface DeleteEventUseCase {
-    deleteEvent(event: Request): Promise<EventDelete>;
+    deleteEvent(event: DeleteEventDto): Promise<EventDelete>;
 }
 
 export class DeleteEvent implements DeleteEventUseCase {
@@ -10,7 +9,7 @@ export class DeleteEvent implements DeleteEventUseCase {
         private readonly eventsRepository: EventsRepository,
     ) { }
 
-    async deleteEvent(event: Request): Promise<EventDelete> {
+    async deleteEvent(event: DeleteEventDto): Promise<EventDelete> {
 
         const deletedEvent = await this.eventsRepository.deleteEvent(event);
 

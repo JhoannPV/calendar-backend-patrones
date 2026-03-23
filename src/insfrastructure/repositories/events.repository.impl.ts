@@ -1,5 +1,4 @@
-import { EventsRepository, EventsEntity, EventsDatasource } from "../../domain";
-import { Request } from "express";
+import { CreateEventDto, DeleteEventDto, EventsRepository, EventsEntity, EventsDatasource, UpdateEventDto } from "../../domain";
 
 export class EventsRepositoryImpl implements EventsRepository {
     constructor(
@@ -10,15 +9,15 @@ export class EventsRepositoryImpl implements EventsRepository {
         return this.eventDatasource.getEvents();
     }
 
-    createEvent(event: EventsEntity): Promise<EventsEntity> {
+    createEvent(event: CreateEventDto): Promise<EventsEntity> {
         return this.eventDatasource.createEvent(event);
     }
 
-    updateEvent(event: Request): Promise<EventsEntity> {
+    updateEvent(event: UpdateEventDto): Promise<EventsEntity> {
         return this.eventDatasource.updateEvent(event);
     }
 
-    deleteEvent(event: Request): Promise<EventsEntity> {
+    deleteEvent(event: DeleteEventDto): Promise<EventsEntity> {
         return this.eventDatasource.deleteEvent(event);
     }
 }

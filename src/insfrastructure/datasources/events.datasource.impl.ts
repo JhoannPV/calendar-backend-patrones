@@ -1,7 +1,6 @@
 import { EventsMapper } from "..";
 import { EventModel } from "../../data/mongodb";
-import { CustomError, EventsEntity, EventsDatasource } from "../../domain";
-import { Request } from "express";
+import { CreateEventDto, CustomError, DeleteEventDto, EventsEntity, EventsDatasource, UpdateEventDto } from "../../domain";
 
 export class EventsDatasourceImpl implements EventsDatasource {
     constructor(
@@ -24,7 +23,7 @@ export class EventsDatasourceImpl implements EventsDatasource {
         }
     }
 
-    async createEvent(event: EventsEntity): Promise<EventsEntity> {
+    async createEvent(event: CreateEventDto): Promise<EventsEntity> {
         try {
             const newEvent = await EventModel.create({
                 title: event.title,
@@ -32,7 +31,7 @@ export class EventsDatasourceImpl implements EventsDatasource {
                 start: event.start,
                 bgColor: event.bgColor,
                 end: event.end,
-                user: event.user,
+                user: event.user.id,
             });
 
             await newEvent.save();
@@ -49,18 +48,23 @@ export class EventsDatasourceImpl implements EventsDatasource {
         }
     }
 
-    async updateEvent(event: Request): Promise<EventsEntity> {
-        const eventId = event.params.id;
+    async updateEvent(event: UpdateEventDto): Promise<EventsEntity> {
         try {
             const existingEvent = await EventModel
-                .findById(eventId);
+                .findById(event.id);
             if (!existingEvent) throw CustomError.notFound('Event not found');
 
-            if (existingEvent.user.toString() !== event.body.user.id) {
+            if (existingEvent.user.toString() !== event.user.id) {
                 throw CustomError.unauthorized('You do not have permission to edit this event');
             }
 
-            const updatedEvent = await EventModel.findByIdAndUpdate(eventId, event.body, { new: true });
+            const updatedEvent = await EventModel.findByIdAndUpdate(event.id, {
+                title: event.title,
+                notes: event.notes,
+                start: event.start,
+                bgColor: event.bgColor,
+                end: event.end,
+            }, { returnDocument: 'after' });
             if (!updatedEvent) throw CustomError.notFound('Event not found after update');
 
             await updatedEvent.populate('user', 'name');
@@ -74,19 +78,18 @@ export class EventsDatasourceImpl implements EventsDatasource {
         }
     }
 
-    async deleteEvent(event: Request): Promise<EventsEntity> {
-        const eventId = event.params.id;
+    async deleteEvent(event: DeleteEventDto): Promise<EventsEntity> {
         try {
             const existingEvent = await EventModel
-                .findById(eventId);
+                .findById(event.id);
 
             if (!existingEvent) throw CustomError.notFound('Event not found');
 
-            if (existingEvent.user.toString() !== event.body.user.id) {
+            if (existingEvent.user.toString() !== event.user.id) {
                 throw CustomError.unauthorized('You do not have permission to delete this event');
             }
 
-            const deletedEvent = await EventModel.findByIdAndDelete(eventId);
+            const deletedEvent = await EventModel.findByIdAndDelete(event.id);
             if (!deletedEvent) throw CustomError.notFound('Event not found after delete');
 
             await deletedEvent.populate('user', 'name');

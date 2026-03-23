@@ -1,8 +1,7 @@
-import { EventsEntity, EventsRepository } from "../..";
-import { Request } from "express";
+import { EventsEntity, EventsRepository, UpdateEventDto } from "../..";
 
 interface UpdateEventUseCase {
-    updateEvent(event: Request): Promise<EventsEntity>;
+    updateEvent(event: UpdateEventDto): Promise<EventsEntity>;
 }
 
 export class UpdateEvent implements UpdateEventUseCase {
@@ -10,7 +9,7 @@ export class UpdateEvent implements UpdateEventUseCase {
         private readonly eventsRepository: EventsRepository,
     ) { }
 
-    async updateEvent(event: Request): Promise<EventsEntity> {
+    async updateEvent(event: UpdateEventDto): Promise<EventsEntity> {
 
         const updateEvent = await this.eventsRepository.updateEvent(event);
 

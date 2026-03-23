@@ -1,5 +1,4 @@
-import { EventsEntity } from "..";
-import { Request } from "express";
+import { CreateEventDto, DeleteEventDto, EventsEntity, UpdateEventDto } from "..";
 
 
 
@@ -7,10 +6,10 @@ export abstract class EventsDatasource {
 
     abstract getEvents(): Promise<EventsEntity[]>;
 
-    abstract createEvent(event: EventsEntity): Promise<EventsEntity>;
+    abstract createEvent(event: CreateEventDto): Promise<EventsEntity>;
 
-    abstract updateEvent(event: Request): Promise<EventsEntity>;
+    abstract updateEvent(event: UpdateEventDto): Promise<EventsEntity>;
 
-    abstract deleteEvent(event: Request): Promise<EventsEntity>;
+    abstract deleteEvent(event: DeleteEventDto): Promise<EventsEntity>;
 
 }
