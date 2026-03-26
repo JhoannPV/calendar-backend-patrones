@@ -31,7 +31,10 @@ export class EventsController {
     createEvent = (req: Request, res: Response) => {
         const createEventDtoFactory = this.createOperationDtoFactory.createDtoFactory().createEvent();
 
-        const createEventDto = createEventDtoFactory.create(req);
+        const [error, createEventDto] = createEventDtoFactory.create(req);
+
+        if (error) return res.status(400).json({ error });
+        if (!createEventDto) return res.status(400).json({ error: 'Invalid create event dto' });
 
         new CreateEvent(this.eventsRepository).createEvent(createEventDto)
             .then((event) => res.status(201).json({ event }))
@@ -39,7 +42,10 @@ export class EventsController {
     }
 
     updateEvent = (req: Request, res: Response) => {
-        const updateEventDto = this.updateEventDtoFactory.create(req);
+        const [error, updateEventDto] = this.updateEventDtoFactory.create(req);
+
+        if (error) return res.status(400).json({ error });
+        if (!updateEventDto) return res.status(400).json({ error: 'Invalid update event dto' });
 
         new UpdateEvent(this.eventsRepository).updateEvent(updateEventDto)
             .then((event) => res.status(200).json({ event }))
@@ -47,7 +53,10 @@ export class EventsController {
     }
 
     deleteEvent = (req: Request, res: Response) => {
-        const deleteEventDto = this.deleteEventDtoFactory.create(req);
+        const [error, deleteEventDto] = this.deleteEventDtoFactory.create(req);
+
+        if (error) return res.status(400).json({ error });
+        if (!deleteEventDto) return res.status(400).json({ error: 'Invalid delete event dto' });
 
         new DeleteEvent(this.eventsRepository).deleteEvent(deleteEventDto)
             .then((event) => res.status(200).json({ event }))

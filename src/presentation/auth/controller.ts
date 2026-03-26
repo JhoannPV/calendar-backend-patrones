@@ -19,19 +19,26 @@ export class AuthController {
     };
 
     registerUser = (req: Request, res: Response) => {
-        const registerUserDtoFactory = this.createOperationDtoFactory.createDtoFactory().registerUser();
+        const [error, registerUserDto] = this.createOperationDtoFactory
+            .createDtoFactory()
+            .registerUser()
+            .create(req.body);
 
-        const registerUserDto = registerUserDtoFactory.create(req.body);
+        if (error) return res.status(400).json({ error });
+        if (!registerUserDto) return res.status(400).json({ error: 'Invalid register user dto' });
 
-        new RegisterUser(this.authRepository).execute(registerUserDto!)
+        new RegisterUser(this.authRepository).execute(registerUserDto)
             .then(data => res.status(201).json(data))
             .catch(error => this.handleError(error, res));
     }
 
     loginUser = (req: Request, res: Response) => {
-        const loginUserDto = this.loginUserDtoFactory.create(req.body);
+        const [error, loginUserDto] = this.loginUserDtoFactory.create(req.body);
 
-        new LoginUser(this.authRepository).execute(loginUserDto!)
+        if (error) return res.status(400).json({ error });
+        if (!loginUserDto) return res.status(400).json({ error: 'Invalid login user dto' });
+
+        new LoginUser(this.authRepository).execute(loginUserDto)
             .then(data => res.status(201).json(data))
             .catch(error => this.handleError(error, res));
     }

@@ -1,4 +1,4 @@
-import { EventsDto } from "../events.dto";
+import { EventsDto } from "../../../..";
 
 export class UpdateEventDto extends EventsDto {
     private constructor(
@@ -17,11 +17,26 @@ export class UpdateEventDto extends EventsDto {
         id: string,
         title: string,
         notes: string,
-        start: Date,
-        end: Date,
+        start: Date | string,
+        end: Date | string,
         bgColor: string,
         user: { id: string },
-    ): UpdateEventDto {
-        return new UpdateEventDto(id, title, notes, start, end, bgColor, user);
+    ): [string?, UpdateEventDto?] {
+        if (!id) return ['Missing id'];
+        if (!title) return ['Missing title'];
+        if (!start) return ['Missing start'];
+        if (!end) return ['Missing end'];
+        if (!bgColor) return ['Missing bgColor'];
+        if (!user?.id) return ['Missing user id'];
+
+        return [undefined, new UpdateEventDto(
+            id,
+            title,
+            notes,
+            new Date(start),
+            new Date(end),
+            bgColor,
+            user,
+        )];
     }
 }

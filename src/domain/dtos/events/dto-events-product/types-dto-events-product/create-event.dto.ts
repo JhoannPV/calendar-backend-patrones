@@ -1,4 +1,4 @@
-import { EventsDto } from "../events.dto";
+import { EventsDto } from "../../../..";
 
 export class CreateEventDto extends EventsDto {
     private constructor(
@@ -15,11 +15,24 @@ export class CreateEventDto extends EventsDto {
     static build(
         title: string,
         notes: string,
-        start: Date,
-        end: Date,
+        start: Date | string,
+        end: Date | string,
         bgColor: string,
         user: { id: string },
-    ): CreateEventDto {
-        return new CreateEventDto(title, notes, start, end, bgColor, user);
+    ): [string?, CreateEventDto?] {
+        if (!title) return ['Missing title'];
+        if (!start) return ['Missing start'];
+        if (!end) return ['Missing end'];
+        if (!bgColor) return ['Missing bgColor'];
+        if (!user?.id) return ['Missing user id'];
+
+        return [undefined, new CreateEventDto(
+            title,
+            notes,
+            new Date(start),
+            new Date(end),
+            bgColor,
+            user,
+        )];
     }
 }
