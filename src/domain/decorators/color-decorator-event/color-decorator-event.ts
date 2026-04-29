@@ -1,17 +1,11 @@
 import { DecoratorEvent, EventItem, EventsEntity } from "../..";
 
-interface ColorPriority {
-    color: string;
-    event: EventsEntity;
-}
-
 export class ColorDecoratorEvent extends DecoratorEvent {
     constructor(eventItem: EventItem) {
         super(eventItem);
     }
 
-    assignPriorityColor(): ColorPriority {
-        const event = this.eventItem.getEvent();
+    assignPriorityColor(event: EventsEntity): string {
         const now = new Date();
         const eventEnd = new Date(event.end);
 
@@ -22,26 +16,26 @@ export class ColorDecoratorEvent extends DecoratorEvent {
         // Clasificar por urgencia
         if (diffDays < 1 && diffDays >= 0) {
             // Urgente: menos de 24 horas
-            return { color: '#FF0000', event: event }; // Rojo
+            return '#FF0000'; // Rojo
         } else if (diffDays >= 1 && diffDays <= 7) {
             // Medio: 1 a 7 días
-            return { color: '#FFA500', event: event }; // Amarillo
+            return '#FFA500'; // Amarillo
         } else if (diffDays > 7) {
             // Bajo: más de 7 días
-            return { color: '#00CC00', event: event }; // Verde
+            return '#00CC00'; // Verde
         }
 
         // Evento pasado o en el pasado
-        return { color: '#000000', event: event }; // Negro
+        return '#000000'; // Negro
     }
 
-    modifyEventColor(colorEvent: ColorPriority): EventsEntity {
-        const modifiedEvent = colorEvent.event.cloneWith({ bgColor: colorEvent.color });
-        return modifiedEvent;
+    modifyEventColor(event: EventsEntity, color: string): EventsEntity {
+        return event.cloneWith({ bgColor: color });
     }
 
     getEvent() {
-        const colorEvent = this.assignPriorityColor();
-        return this.modifyEventColor(colorEvent);
+        const event = this.eventItem.getEvent();
+        const color = this.assignPriorityColor(event);
+        return this.modifyEventColor(event, color);
     }
 }

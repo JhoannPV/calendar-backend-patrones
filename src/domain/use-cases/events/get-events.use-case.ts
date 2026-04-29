@@ -13,13 +13,11 @@ export class GetEvents implements GetEventsUseCase {
 
         const events = await this.eventsRepository.getEvents();
 
-        const decoratedEvents = events.map(event => {
+        return events.map(event => {
             const baseEvent = new BaseEvent(event);
             const colorDecorator = new ColorDecoratorEvent(baseEvent);
             return colorDecorator.getEvent();
         });
-
-        return decoratedEvents;
     }
 
 }
