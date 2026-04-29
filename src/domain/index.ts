@@ -31,3 +31,7 @@ export * from './use-cases/events/delete-event.use-case';
 export * from './reusable/interfaces/user-token.interface';
 export * from './reusable/interfaces/events.interface';
 export * from './reusable/types/sign-token.type';
+export * from './decorators/event-item';
+export * from './decorators/base-event/base-event';
+export * from './decorators/decorator-event/decorator-event';
+export * from './decorators/color-decorator-event/color-decorator-event';

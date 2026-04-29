@@ -1,4 +1,4 @@
-import { DeleteEventDto, EventDelete, EventsRepository } from "../..";
+import { BaseEvent, ColorDecoratorEvent, DeleteEventDto, EventDelete, EventsRepository } from "../..";
 
 interface DeleteEventUseCase {
     deleteEvent(event: DeleteEventDto): Promise<EventDelete>;
@@ -13,9 +13,13 @@ export class DeleteEvent implements DeleteEventUseCase {
 
         const deletedEvent = await this.eventsRepository.deleteEvent(event);
 
+        const baseEvent = new BaseEvent(deletedEvent);
+
+        const colorDecorator = new ColorDecoratorEvent(baseEvent);
+
         return {
             msg: 'Event deleted successfully',
-            event: deletedEvent
+            event: colorDecorator.getEvent()
         };
     }
 }

@@ -1,4 +1,4 @@
-import { CreateEventDto, EventsEntity, EventsRepository } from "../..";
+import { BaseEvent, ColorDecoratorEvent, CreateEventDto, EventsEntity, EventsRepository } from "../..";
 
 interface CreateEventUseCase {
     createEvent(event: CreateEventDto): Promise<EventsEntity>;
@@ -13,6 +13,10 @@ export class CreateEvent implements CreateEventUseCase {
 
         const newEvent = await this.eventsRepository.createEvent(event);
 
-        return newEvent;
+        const baseEvent = new BaseEvent(newEvent);
+
+        const colorDecorator = new ColorDecoratorEvent(baseEvent);
+
+        return colorDecorator.getEvent();
     }
 }

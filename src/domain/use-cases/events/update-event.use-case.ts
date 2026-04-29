@@ -1,4 +1,4 @@
-import { EventsEntity, EventsRepository, UpdateEventDto } from "../..";
+import { BaseEvent, ColorDecoratorEvent, EventsEntity, EventsRepository, UpdateEventDto } from "../..";
 
 interface UpdateEventUseCase {
     updateEvent(event: UpdateEventDto): Promise<EventsEntity>;
@@ -13,6 +13,10 @@ export class UpdateEvent implements UpdateEventUseCase {
 
         const updateEvent = await this.eventsRepository.updateEvent(event);
 
-        return updateEvent;
+        const baseEvent = new BaseEvent(updateEvent);
+
+        const colorDecorator = new ColorDecoratorEvent(baseEvent);
+
+        return colorDecorator.getEvent();
     }
 }
