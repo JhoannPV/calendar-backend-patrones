@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { EventsController } from "./controller";
-import { EventsDatasourceImpl, EventsRepositoryImpl } from "../../insfrastructure";
+import { EventsDatasourceImpl, EventsRepositoryImpl, EventsRepositoryProxy } from "../../insfrastructure";
 import { AuthMiddleware, ResErrorsMiddleware, ValidatorFieldsMiddleware } from "..";
 
 export class EventsRoutes {
@@ -8,7 +8,8 @@ export class EventsRoutes {
         const router = Router();
         const datasource = new EventsDatasourceImpl();
         const eventsRepository = new EventsRepositoryImpl(datasource);
-        const controller = new EventsController(eventsRepository);
+        const eventsRepositoryProxyCache = new EventsRepositoryProxy(eventsRepository);
+        const controller = new EventsController(eventsRepositoryProxyCache);
 
         router.get('/get-events',
             [
