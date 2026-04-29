@@ -1,5 +1,5 @@
-import { AuthRepository, CustomError, RegisterUserDto, SignToken, UserToken } from "../..";
-import { JwtAdapter } from "../../../config";
+import { AuthRepository, CustomError, RegisterUserDto, UserToken } from "../..";
+import { JwtAdapter, ITokenAdapter } from "../../../config";
 import { Request } from "express";
 
 interface RenewUseCase {
@@ -9,7 +9,7 @@ interface RenewUseCase {
 export class RenewToken implements RenewUseCase {
     constructor(
         private readonly authRepository: AuthRepository,
-        private readonly signToken: SignToken = JwtAdapter.generateToken,
+        private readonly tokenAdapter: ITokenAdapter = new JwtAdapter(),
     ) { }
 
     async execute(req: Request): Promise<UserToken> {
@@ -18,7 +18,7 @@ export class RenewToken implements RenewUseCase {
 
         //Token
         const expiredToken: number = 60 * 60 * 2; // 2 horas
-        const token = await this.signToken({ id: user.id }, expiredToken);
+        const token = await this.tokenAdapter.generateToken({ id: user.id }, expiredToken);
         if (!token) throw CustomError.internalServer('Error generating token');
 
         return {

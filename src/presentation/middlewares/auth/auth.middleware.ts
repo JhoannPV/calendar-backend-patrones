@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { JwtAdapter } from "../../../config";
+import { JwtAdapter, ITokenAdapter } from "../../../config";
 import { UserModel } from "../../../data/mongodb";
 
 
 export class AuthMiddleware {
+    private static readonly tokenAdapter: ITokenAdapter = new JwtAdapter();
+
     static validateJWT = async (req: Request, res: Response, next: NextFunction) => {
 
         const authorization = req.header('Authorization');
@@ -20,7 +22,7 @@ export class AuthMiddleware {
         const token = authorization.split(' ')[1] || '';
 
         try {
-            const payload = await JwtAdapter.validateToken<{ id: string }>(token);
+            const payload = await AuthMiddleware.tokenAdapter.validateToken<{ id: string }>(token);
 
             if (!payload) {
                 res.status(401).json({ error: 'Invalid Token' });

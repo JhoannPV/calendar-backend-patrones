@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
-import { envs } from './envs';
+import { ITokenAdapter } from './token.adapter.interface';
+import { envs } from '../../envs';
 
 const JWT_SEED = envs.JWT_SEED;
 
-export class JwtAdapter {
-    static async generateToken(
+export class JwtAdapter implements ITokenAdapter {
+    async generateToken(
         payload: Object,
         duration: number = 60 * 60 * 2    // 2 hours
     ): Promise<string | null> {
@@ -17,7 +18,7 @@ export class JwtAdapter {
         });
     }
 
-    static validateToken<T>(token: string): Promise<T | null> {
+    async validateToken<T>(token: string): Promise<T | null> {
         return new Promise((resolve) => {
             jwt.verify(token, JWT_SEED, (err, decoded) => {
                 if (err) return resolve(null);

@@ -1,16 +1,13 @@
 import { UserMapper } from "..";
-import { BcryptAdapter } from "../../config";
+import { BcryptAdapter, IPasswordAdapter } from "../../config";
 import { UserModel } from "../../data/mongodb";
 import { AuthDatasource, CustomError, LoginUserDto, RegisterUserDto, UserEntity } from "../../domain";
 import { Request } from "express";
 
-type HashFunction = (password: string) => string;
-type CompareFunction = (password: string, hashed: string) => boolean;
-
 export class AuthDatasourceImpl implements AuthDatasource {
+    // Inyección de dependencias: permite usar cualquier adapter que implemente IPasswordAdapter
     constructor(
-        private readonly hashPassword: HashFunction = BcryptAdapter.hash,
-        private readonly comparePassword: CompareFunction = BcryptAdapter.compare,
+        private readonly passwordAdapter: IPasswordAdapter = new BcryptAdapter(),
     ) { }
 
     async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
@@ -20,7 +17,7 @@ export class AuthDatasourceImpl implements AuthDatasource {
             const user = await UserModel.findOne({ email });
             if (!user) throw CustomError.badRequest('User does not exist');
 
-            const isMatching = await this.comparePassword(password, user.password);
+            const isMatching = this.passwordAdapter.compare(password, user.password);
             if (!isMatching) throw CustomError.badRequest('Password Incorrect');
 
             return UserMapper.userEntityFromObject(user);
@@ -43,7 +40,7 @@ export class AuthDatasourceImpl implements AuthDatasource {
             const user = await UserModel.create({
                 name: name,
                 email: email,
-                password: this.hashPassword(password),
+                password: this.passwordAdapter.hash(password),
             });
 
             await user.save();
