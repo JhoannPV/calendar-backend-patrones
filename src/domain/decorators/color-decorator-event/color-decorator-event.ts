@@ -13,10 +13,10 @@ export class ColorDecoratorEvent extends DecoratorEvent {
     assignPriorityColor(): ColorPriority {
         const event = this.eventItem.getEvent();
         const now = new Date();
-        const eventStart = new Date(event.start);
+        const eventEnd = new Date(event.end);
 
-        // Calcular diferencia en milisegundos y convertir a días
-        const diffTime = eventStart.getTime() - now.getTime();
+        // Calcular el tiempo restante hasta que termine el evento
+        const diffTime = eventEnd.getTime() - now.getTime();
         const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
         // Clasificar por urgencia
