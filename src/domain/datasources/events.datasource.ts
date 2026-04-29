@@ -1,7 +1,5 @@
 import { CreateEventDto, DeleteEventDto, EventsEntity, UpdateEventDto } from "..";
 
-
-
 export abstract class EventsDatasource {
 
     abstract getEvents(): Promise<EventsEntity[]>;
