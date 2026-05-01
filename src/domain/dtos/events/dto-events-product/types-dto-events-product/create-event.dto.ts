@@ -7,6 +7,7 @@ export class CreateEventDto extends EventsDto {
         public start: Date,
         public end: Date,
         public bgColor: string,
+        public category: string,
         user: { id: string },
     ) {
         super(user);
@@ -18,12 +19,14 @@ export class CreateEventDto extends EventsDto {
         start: Date | string,
         end: Date | string,
         bgColor: string,
+        category: string,
         user: { id: string },
     ): [string?, CreateEventDto?] {
         if (!title) return ['Missing title'];
         if (!start) return ['Missing start'];
         if (!end) return ['Missing end'];
         if (!bgColor) return ['Missing bgColor'];
+        if (!category) return ['Missing category'];
         if (!user?.id) return ['Missing user id'];
 
         return [undefined, new CreateEventDto(
@@ -32,6 +35,7 @@ export class CreateEventDto extends EventsDto {
             new Date(start),
             new Date(end),
             bgColor,
+            category,
             user,
         )];
     }

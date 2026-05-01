@@ -6,7 +6,7 @@ export class UpdateEventDtoFactory extends EventsDtoFactory {
         const body = data.body;
         const params = data.params;
         const id = params.id;
-        const { title, notes, start, end, bgColor, user } = body;
+        const { title, notes, start, end, bgColor, category, user } = body;
 
         return UpdateEventDto.build(
             id,
@@ -15,6 +15,7 @@ export class UpdateEventDtoFactory extends EventsDtoFactory {
             start,
             end,
             bgColor,
+            category,
             user,
         );
     }

@@ -32,6 +32,8 @@ export class ValidatorFieldsMiddleware {
             check('start', 'Start date is required').custom(isDate).run(req),
             check('end', 'End date is required').custom(isDate).run(req),
             check('bgColor', 'Background color is required').not().isEmpty().run(req),
+            check('category', 'Category is required').not().isEmpty().run(req),
+            check('category', 'Category is invalid').isIn(['general', 'work', 'sports', 'family', 'travel']).run(req),
 
         ]);
         next();

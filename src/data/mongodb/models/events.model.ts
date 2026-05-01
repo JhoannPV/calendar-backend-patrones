@@ -20,6 +20,12 @@ const eventSchema = new Schema({
         type: String,
         required: [true, 'Background color is required']
     },
+    category: {
+        type: String,
+        enum: ['general', 'work', 'sports', 'family', 'travel'],
+        required: [true, 'Category is required'],
+        default: 'general'
+    },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',

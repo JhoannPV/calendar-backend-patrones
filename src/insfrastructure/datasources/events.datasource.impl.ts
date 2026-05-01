@@ -30,6 +30,7 @@ export class EventsDatasourceImpl implements EventsDatasource {
                 notes: event.notes,
                 start: event.start,
                 bgColor: event.bgColor,
+                category: event.category,
                 end: event.end,
                 user: event.user.id,
             });
@@ -65,6 +66,7 @@ export class EventsDatasourceImpl implements EventsDatasource {
                 start: event.start,
                 end: event.end,
                 bgColor: event.bgColor,
+                category: event.category,
             });
 
             const updatedEvent = await EventModel.findByIdAndUpdate(

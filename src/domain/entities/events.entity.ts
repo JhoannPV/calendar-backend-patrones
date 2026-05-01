@@ -7,6 +7,7 @@ export class EventsEntity {
         public start: Date,
         public end: Date,
         public bgColor: string,
+        public category: string,
         public user: Types.ObjectId,
         public _id?: number) { }
 
@@ -17,6 +18,7 @@ export class EventsEntity {
             new Date(this.start),
             new Date(this.end),
             this.bgColor,
+            this.category,
             this.user,
             this._id
         );
@@ -31,18 +33,20 @@ export class EventsEntity {
             changes.start ? new Date(changes.start) : copy.start,
             changes.end ? new Date(changes.end) : copy.end,
             changes.bgColor ?? copy.bgColor,
+            changes.category ?? copy.category,
             changes.user ?? copy.user,
             changes._id ?? copy._id
         );
     }
 
-    toUpdateObject(): Pick<EventsEntity, 'title' | 'notes' | 'start' | 'end' | 'bgColor'> {
+    toUpdateObject(): Pick<EventsEntity, 'title' | 'notes' | 'start' | 'end' | 'bgColor' | 'category'> {
         return {
             title: this.title,
             notes: this.notes,
             start: this.start,
             end: this.end,
             bgColor: this.bgColor,
+            category: this.category,
         };
     }
 }
