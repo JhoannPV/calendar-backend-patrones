@@ -1,36 +1,14 @@
 import mongoose, { Schema } from 'mongoose';
 
 const eventSchema = new Schema({
-    title: {
-        type: String,
-        required: [true, 'Title is required']
-    },
-    notes: {
-        type: String,
-    },
-    start: {
-        type: Date,
-        required: [true, 'Start date is required']
-    },
-    end: {
-        type: Date,
-        required: [true, 'End date is required']
-    },
-    bgColor: {
-        type: String,
-        required: [true, 'Background color is required']
-    },
-    category: {
-        type: String,
-        enum: ['general', 'work', 'sports', 'family', 'travel'],
-        required: [true, 'Category is required'],
-        default: 'general'
-    },
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    }
+    title:    { type: String, required: true },
+    notes:    { type: String },
+    start:    { type: Date, required: true },
+    end:      { type: Date, required: true },
+    bgColor:  { type: String, required: true },
+    category: { type: String, enum: ['general', 'work', 'sports', 'family', 'travel'], required: true, default: 'general' },
+    user:     { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    parentId: { type: Schema.Types.ObjectId, ref: 'Event', default: null }, // COMPOSITE
 });
 
 export const EventModel = mongoose.model('Event', eventSchema);

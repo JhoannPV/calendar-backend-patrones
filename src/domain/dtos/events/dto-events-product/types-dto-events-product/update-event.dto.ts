@@ -10,6 +10,7 @@ export class UpdateEventDto extends EventsDto {
         public bgColor: string,
         public category: string,
         user: { id: string },
+        public parentId?: string | null, // NUEVO
     ) {
         super(user);
     }
@@ -23,6 +24,7 @@ export class UpdateEventDto extends EventsDto {
         bgColor: string,
         category: string,
         user: { id: string },
+        parentId?: string | null, // NUEVO
     ): [string?, UpdateEventDto?] {
         if (!id) return ['Missing id'];
         if (!title) return ['Missing title'];
@@ -41,6 +43,7 @@ export class UpdateEventDto extends EventsDto {
             bgColor,
             category,
             user,
+            parentId ?? null, // NUEVO
         )];
     }
 }
