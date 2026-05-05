@@ -1,8 +1,12 @@
 import { EventsMapper } from '..';
 import { EventModel } from '../../data/mongodb';
 import {
-    CreateEventDto, CustomError, DeleteEventDto,
-    EventsEntity, EventsDatasource, UpdateEventDto,
+    CreateEventDto,
+    CustomError,
+    DeleteEventDto,
+    EventsEntity,
+    EventsDatasource,
+    UpdateEventDto,
 } from '../../domain';
 
 export class EventsDatasourceImpl implements EventsDatasource {
@@ -12,7 +16,9 @@ export class EventsDatasourceImpl implements EventsDatasource {
         try {
             const events = await EventModel.find().populate('user', 'name');
             if (!events) throw CustomError.notFound('No events found');
-            return events.map((event: { [key: string]: any; }) => EventsMapper.EventEntityFromObject(event));
+            return events.map((event: { [key: string]: any }) =>
+                EventsMapper.EventEntityFromObject(event)
+            );
         } catch (error) {
             if (error instanceof CustomError) throw error;
             throw CustomError.internalServer();
@@ -24,12 +30,12 @@ export class EventsDatasourceImpl implements EventsDatasource {
             const newEvent = await EventModel.create({
                 title:    event.title,
                 notes:    event.notes,
-                start:    event.start,
-                end:      event.end,
+                start:    event.start    ?? null,
+                end:      event.end      ?? null,
                 bgColor:  event.bgColor,
                 category: event.category,
                 user:     event.user.id,
-                parentId: event.parentId ?? null, // COMPOSITE
+                parentId: event.parentId ?? null,
             });
             await newEvent.populate('user', 'name');
             return EventsMapper.EventEntityFromObject(newEvent);
@@ -47,13 +53,14 @@ export class EventsDatasourceImpl implements EventsDatasource {
                 throw CustomError.unauthorized('You do not have permission to edit this event');
 
             const existingEventEntity = EventsMapper.EventEntityFromObject(existingEvent);
-            const updatedEventEntity = existingEventEntity.cloneWith({
+            const updatedEventEntity  = existingEventEntity.cloneWith({
                 title:    event.title,
                 notes:    event.notes,
                 start:    event.start,
                 end:      event.end,
                 bgColor:  event.bgColor,
                 category: event.category,
+                parentId: event.parentId,
             });
 
             const updatedEvent = await EventModel.findByIdAndUpdate(
