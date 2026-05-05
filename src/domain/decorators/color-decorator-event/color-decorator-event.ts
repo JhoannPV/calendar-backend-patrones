@@ -1,4 +1,4 @@
-import { DecoratorEvent, EventItem, EventsEntity } from "../..";
+import { DecoratorEvent, EventItem, EventsEntity } from '../..';
 
 export class ColorDecoratorEvent extends DecoratorEvent {
     constructor(eventItem: EventItem) {
@@ -6,27 +6,19 @@ export class ColorDecoratorEvent extends DecoratorEvent {
     }
 
     assignPriorityColor(event: EventsEntity): string {
-        const now = new Date();
+        // Evento padre sin fechas → color gris neutro
+        if (!event.end) return '#6c757d';
+
+        const now      = new Date();
         const eventEnd = new Date(event.end);
 
-        // Calcular el tiempo restante hasta que termine el evento
         const diffTime = eventEnd.getTime() - now.getTime();
         const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
-        // Clasificar por urgencia
-        if (diffDays < 1 && diffDays >= 0) {
-            // Urgente: menos de 24 horas
-            return '#FF0000'; // Rojo
-        } else if (diffDays >= 1 && diffDays <= 7) {
-            // Medio: 1 a 7 días
-            return '#FFA500'; // Amarillo
-        } else if (diffDays > 7) {
-            // Bajo: más de 7 días
-            return '#00CC00'; // Verde
-        }
-
-        // Evento pasado o en el pasado
-        return '#000000'; // Negro
+        if (diffDays < 1 && diffDays >= 0) return '#FF0000'; // Urgente
+        if (diffDays >= 1 && diffDays <= 7) return '#FFA500'; // Medio
+        if (diffDays > 7)                   return '#00CC00'; // Tranquilo
+        return '#000000';                                      // Pasado
     }
 
     modifyEventColor(event: EventsEntity, color: string): EventsEntity {
