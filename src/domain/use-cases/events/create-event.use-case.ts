@@ -35,6 +35,7 @@ export class CreateEvent implements CreateEventUseCase {
       event: decoratedEvent,
       triggeredBy: {
         id: event.user.id,
+        email: event.user.email,
       },
       occurredAt: new Date(),
     });

@@ -35,6 +35,7 @@ export class DeleteEvent implements DeleteEventUseCase {
       event: decoratedEvent,
       triggeredBy: {
         id: event.user.id,
+        email: event.user.email,
       },
       occurredAt: new Date(),
     });

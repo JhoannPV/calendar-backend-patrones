@@ -11,7 +11,7 @@ export class PushNotificationObserver implements EventObserver {
     return {
       observer: 'push',
       status: 'success',
-      message: `Push enviada por acción ${action} sobre "${event.title}"`,
+      message: `Push enviado por acción ${action} sobre "${event.title}"`,
     };
   }
 }
