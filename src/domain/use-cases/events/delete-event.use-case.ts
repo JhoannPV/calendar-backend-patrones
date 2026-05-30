@@ -1,25 +1,48 @@
-import { BaseEvent, ColorDecoratorEvent, DeleteEventDto, EventDelete, EventsRepository } from "../..";
+import {
+  BaseEvent,
+  ColorDecoratorEvent,
+  DeleteEventDto,
+  EventPublisher,
+  EventsRepository,
+  ObserverResult,
+} from '../..';
+
+export interface DeleteEventResponse {
+  msg: string;
+  event: unknown;
+  notifications: ObserverResult[];
+}
 
 interface DeleteEventUseCase {
-    deleteEvent(event: DeleteEventDto): Promise<EventDelete>;
+  execute(event: DeleteEventDto): Promise<DeleteEventResponse>;
 }
 
 export class DeleteEvent implements DeleteEventUseCase {
-    constructor(
-        private readonly eventsRepository: EventsRepository,
-    ) { }
+  constructor(
+    private readonly eventsRepository: EventsRepository,
+    private readonly eventPublisher: EventPublisher
+  ) {}
 
-    async deleteEvent(event: DeleteEventDto): Promise<EventDelete> {
+  async execute(event: DeleteEventDto): Promise<DeleteEventResponse> {
+    const deletedEvent = await this.eventsRepository.deleteEvent(event);
 
-        const deletedEvent = await this.eventsRepository.deleteEvent(event);
+    const baseEvent = new BaseEvent(deletedEvent);
+    const colorDecorator = new ColorDecoratorEvent(baseEvent);
+    const decoratedEvent = colorDecorator.getEvent();
 
-        const baseEvent = new BaseEvent(deletedEvent);
+    const notifications = await this.eventPublisher.publish({
+      action: 'deleted',
+      event: decoratedEvent,
+      triggeredBy: {
+        id: event.user.id,
+      },
+      occurredAt: new Date(),
+    });
 
-        const colorDecorator = new ColorDecoratorEvent(baseEvent);
-
-        return {
-            msg: 'Event deleted successfully',
-            event: colorDecorator.getEvent()
-        };
-    }
+    return {
+      msg: 'Event deleted successfully',
+      event: decoratedEvent,
+      notifications,
+    };
+  }
 }
