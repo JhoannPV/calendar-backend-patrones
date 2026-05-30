@@ -10,7 +10,7 @@ import {
 } from '../../domain';
 
 export class EventsDatasourceImpl implements EventsDatasource {
-    constructor() {}
+    constructor() { }
 
     async getEvents(): Promise<EventsEntity[]> {
         try {
@@ -28,13 +28,13 @@ export class EventsDatasourceImpl implements EventsDatasource {
     async createEvent(event: CreateEventDto): Promise<EventsEntity> {
         try {
             const newEvent = await EventModel.create({
-                title:    event.title,
-                notes:    event.notes,
-                start:    event.start    ?? null,
-                end:      event.end      ?? null,
-                bgColor:  event.bgColor,
+                title: event.title,
+                notes: event.notes,
+                start: event.start ?? null,
+                end: event.end ?? null,
+                bgColor: event.bgColor,
                 category: event.category,
-                user:     event.user.id,
+                user: event.user.id,
                 parentId: event.parentId ?? null,
             });
             await newEvent.populate('user', 'name');
@@ -53,12 +53,12 @@ export class EventsDatasourceImpl implements EventsDatasource {
                 throw CustomError.unauthorized('You do not have permission to edit this event');
 
             const existingEventEntity = EventsMapper.EventEntityFromObject(existingEvent);
-            const updatedEventEntity  = existingEventEntity.cloneWith({
-                title:    event.title,
-                notes:    event.notes,
-                start:    event.start,
-                end:      event.end,
-                bgColor:  event.bgColor,
+            const updatedEventEntity = existingEventEntity.cloneWith({
+                title: event.title,
+                notes: event.notes,
+                start: event.start,
+                end: event.end,
+                bgColor: event.bgColor,
                 category: event.category,
                 parentId: event.parentId,
             });
@@ -88,6 +88,60 @@ export class EventsDatasourceImpl implements EventsDatasource {
             if (!deletedEvent) throw CustomError.notFound('Event not found after delete');
             await deletedEvent.populate('user', 'name');
             return EventsMapper.EventEntityFromObject(deletedEvent);
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer();
+        }
+    }
+
+    async deleteEventCascade(event: DeleteEventDto): Promise<EventsEntity[]> {
+        try {
+            const existingEvent = await EventModel.findById(event.id).populate('user', 'name');
+            if (!existingEvent) throw CustomError.notFound('Event not found');
+
+            const getUserId = (u: any) => {
+                if (!u) return undefined;
+                if (typeof u === 'string') return u;
+                if (u.id) return u.id.toString();
+                if (u._id) return u._id.toString();
+                if (typeof u.toString === 'function') return u.toString();
+                return undefined;
+            };
+
+            const rootUserId = getUserId(existingEvent.user);
+            if (!rootUserId || rootUserId !== event.user.id)
+                throw CustomError.unauthorized('You do not have permission to delete this event');
+
+            // Collect all descendant ids (BFS)
+            const toProcess: string[] = [existingEvent._id.toString()];
+            const collected = new Set<string>(toProcess);
+
+            for (let i = 0; i < toProcess.length; i++) {
+                const pid = toProcess[i];
+                const children = await EventModel.find({ parentId: pid }).populate('user', 'name');
+                for (const c of children) {
+                    const cid = c._id.toString();
+                    // Ensure ownership matches
+                    const childUserId = getUserId(c.user);
+                    if (!childUserId || childUserId !== event.user.id) throw CustomError.unauthorized('Child event belongs to another user');
+                    if (!collected.has(cid)) {
+                        collected.add(cid);
+                        toProcess.push(cid);
+                    }
+                }
+            }
+
+            // Delete in reverse order (children first)
+            const deletedEntities: EventsEntity[] = [];
+            for (let i = toProcess.length - 1; i >= 0; i--) {
+                const idToDelete = toProcess[i];
+                const deleted = await EventModel.findByIdAndDelete(idToDelete);
+                if (!deleted) continue;
+                await deleted.populate('user', 'name');
+                deletedEntities.push(EventsMapper.EventEntityFromObject(deleted));
+            }
+
+            return deletedEntities;
         } catch (error) {
             if (error instanceof CustomError) throw error;
             throw CustomError.internalServer();

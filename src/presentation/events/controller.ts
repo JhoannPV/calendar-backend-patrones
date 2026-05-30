@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { CreateEvent, CreateOperationDtoFactory, CustomError, DeleteEvent, DeleteEventDtoFactory, GetEvents, UpdateEvent, UpdateEventDtoFactory } from '../../domain';
+import { CreateEvent, CreateOperationDtoFactory, CustomError, DeleteEvent, DeleteEventDtoFactory, GetEvents, UpdateEvent, UpdateEventDtoFactory, DeleteEventCascade } from '../../domain';
 import { EventsRepository } from '../../domain/repositories/events.repository';
 
 export class EventsController {
@@ -57,9 +57,19 @@ export class EventsController {
 
         if (error) return res.status(400).json({ error });
         if (!deleteEventDto) return res.status(400).json({ error: 'Invalid delete event dto' });
-
         new DeleteEvent(this.eventsRepository).deleteEvent(deleteEventDto)
             .then((event) => res.status(200).json({ event }))
+            .catch((error) => this.handleError(error, res));
+    }
+
+    deleteEventCascade = (req: Request, res: Response) => {
+        const [error, deleteEventDto] = this.deleteEventDtoFactory.create(req);
+
+        if (error) return res.status(400).json({ error });
+        if (!deleteEventDto) return res.status(400).json({ error: 'Invalid delete event dto' });
+
+        new DeleteEventCascade(this.eventsRepository).deleteEventCascade(deleteEventDto)
+            .then((result) => res.status(200).json({ events: result.events, msg: result.msg }))
             .catch((error) => this.handleError(error, res));
     }
 }

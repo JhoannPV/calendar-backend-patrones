@@ -35,6 +35,12 @@ export class EventsRoutes {
                 AuthMiddleware.validateJWT,
             ], controller.deleteEvent);
 
+        // Cascade delete: delete parent and all descendants
+        router.delete('/delete-event-cascade/:id',
+            [
+                AuthMiddleware.validateJWT,
+            ], controller.deleteEventCascade);
+
         return router;
     }
 }

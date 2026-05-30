@@ -20,4 +20,8 @@ export class EventsRepositoryImpl implements EventsRepository {
     deleteEvent(event: DeleteEventDto): Promise<EventsEntity> {
         return this.eventDatasource.deleteEvent(event);
     }
+
+    deleteEventCascade(event: DeleteEventDto): Promise<EventsEntity[]> {
+        return this.eventDatasource.deleteEventCascade(event);
+    }
 }
