@@ -3,6 +3,7 @@ import { EventsController } from './controller';
 import {
   CreateEvent,
   DeleteEvent,
+  DeleteEventCascade,
   GetEvents,
   UpdateEvent,
 } from '../../domain';
@@ -29,24 +30,17 @@ export class EventsRoutes {
     const eventPublisher = EventNotificationFactory.createPublisher();
 
     const getEventsUseCase = new GetEvents(eventsRepositoryProxyCache);
-    const createEventUseCase = new CreateEvent(
-      eventsRepositoryProxyCache,
-      eventPublisher
-    );
-    const updateEventUseCase = new UpdateEvent(
-      eventsRepositoryProxyCache,
-      eventPublisher
-    );
-    const deleteEventUseCase = new DeleteEvent(
-      eventsRepositoryProxyCache,
-      eventPublisher
-    );
+    const createEventUseCase = new CreateEvent(eventsRepositoryProxyCache, eventPublisher);
+    const updateEventUseCase = new UpdateEvent(eventsRepositoryProxyCache, eventPublisher);
+    const deleteEventUseCase = new DeleteEvent(eventsRepositoryProxyCache, eventPublisher);
+    const deleteEventCascadeUseCase = new DeleteEventCascade(eventsRepository);
 
     const controller = new EventsController(
       getEventsUseCase,
       createEventUseCase,
       updateEventUseCase,
-      deleteEventUseCase
+      deleteEventUseCase,
+      deleteEventCascadeUseCase,
     );
 
     router.get(
@@ -75,6 +69,12 @@ export class EventsRoutes {
       '/delete-event/:id',
       AuthMiddleware.validateJWT,
       controller.deleteEvent
+    );
+
+    router.delete(
+      '/delete-event-cascade/:id',
+      AuthMiddleware.validateJWT,
+      controller.deleteEventCascade
     );
 
     return router;

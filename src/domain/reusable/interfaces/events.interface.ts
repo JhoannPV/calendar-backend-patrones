@@ -4,3 +4,8 @@ export interface EventDelete {
     msg: string,
     event: EventsEntity
 }
+
+export interface EventsDelete {
+    msg: string,
+    events: EventsEntity[]
+}

@@ -10,4 +10,7 @@ export abstract class EventsDatasource {
 
     abstract deleteEvent(event: DeleteEventDto): Promise<EventsEntity>;
 
+    // Delete a parent and its descendants returning the deleted entities (for undo)
+    abstract deleteEventCascade(event: DeleteEventDto): Promise<EventsEntity[]>;
+
 }

@@ -55,4 +55,13 @@ export class EventsRepositoryProxy implements EventsRepository {
 
         return result;
     }
+
+    async deleteEventCascade(event: DeleteEventDto): Promise<EventsEntity[]> {
+        const result = await this.realRepository.deleteEventCascade(event);
+
+        // invalidar caché
+        this.cache = null;
+
+        return result;
+    }
 }
