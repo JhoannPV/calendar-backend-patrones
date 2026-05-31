@@ -36,3 +36,7 @@ export * from './decorators/event-item';
 export * from './decorators/base-event/base-event';
 export * from './decorators/decorator-event/decorator-event';
 export * from './decorators/color-decorator-event/color-decorator-event';
+export * from './observer/event-change.types';
+export * from './observer/event-observer.interface';
+export * from './observer/event-publisher.interface';
+export * from './observer/event-notification.publisher';

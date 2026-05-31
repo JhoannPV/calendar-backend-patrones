@@ -1,22 +1,48 @@
-import { BaseEvent, ColorDecoratorEvent, CreateEventDto, EventsEntity, EventsRepository } from "../..";
+import {
+  BaseEvent,
+  ColorDecoratorEvent,
+  CreateEventDto,
+  EventPublisher,
+  EventsEntity,
+  EventsRepository,
+  ObserverResult,
+} from '../..';
+
+export interface CreateEventResponse {
+  event: EventsEntity;
+  notifications: ObserverResult[];
+}
 
 interface CreateEventUseCase {
-    createEvent(event: CreateEventDto): Promise<EventsEntity>;
+  execute(event: CreateEventDto): Promise<CreateEventResponse>;
 }
 
 export class CreateEvent implements CreateEventUseCase {
-    constructor(
-        private readonly eventsRepository: EventsRepository,
-    ) { }
+  constructor(
+    private readonly eventsRepository: EventsRepository,
+    private readonly eventPublisher: EventPublisher
+  ) {}
 
-    async createEvent(event: CreateEventDto): Promise<EventsEntity> {
+  async execute(event: CreateEventDto): Promise<CreateEventResponse> {
+    const newEvent = await this.eventsRepository.createEvent(event);
 
-        const newEvent = await this.eventsRepository.createEvent(event);
+    const baseEvent = new BaseEvent(newEvent);
+    const colorDecorator = new ColorDecoratorEvent(baseEvent);
+    const decoratedEvent = colorDecorator.getEvent();
 
-        const baseEvent = new BaseEvent(newEvent);
+    const notifications = await this.eventPublisher.publish({
+      action: 'created',
+      event: decoratedEvent,
+      triggeredBy: {
+        id: event.user.id,
+        email: event.user.email,
+      },
+      occurredAt: new Date(),
+    });
 
-        const colorDecorator = new ColorDecoratorEvent(baseEvent);
-
-        return colorDecorator.getEvent();
-    }
+    return {
+      event: decoratedEvent,
+      notifications,
+    };
+  }
 }

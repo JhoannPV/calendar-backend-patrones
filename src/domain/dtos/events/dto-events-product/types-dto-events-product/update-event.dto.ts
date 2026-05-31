@@ -9,7 +9,7 @@ export class UpdateEventDto extends EventsDto {
         public end:      Date | null,
         public bgColor:  string,
         public category: string,
-        user: { id: string },
+        user: { id: string; email: string },
         public parentId?: string | null,
     ) {
         super(user);
@@ -23,7 +23,7 @@ export class UpdateEventDto extends EventsDto {
         end:      Date | string | null,
         bgColor:  string,
         category: string,
-        user:     { id: string },
+        user:     { id: string; email: string },
         parentId?: string | null,
     ): [string?, UpdateEventDto?] {
         if (!id)       return ['Missing id'];
@@ -31,6 +31,7 @@ export class UpdateEventDto extends EventsDto {
         if (!bgColor)  return ['Missing bgColor'];
         if (!category) return ['Missing category'];
         if (!user?.id) return ['Missing user id'];
+        if (!user?.email) return ['Missing user email'];
 
         const isSubEvent = !!parentId;
 
