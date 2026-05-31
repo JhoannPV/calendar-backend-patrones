@@ -2,35 +2,31 @@ import {
   BaseEvent,
   ColorDecoratorEvent,
   CreateEventDto,
+  EventChangePayload,
   EventPublisher,
   EventsEntity,
   EventsRepository,
-  ObserverResult,
+  EventCreate,
 } from '../..';
 
-export interface CreateEventResponse {
-  event: EventsEntity;
-  notifications: ObserverResult[];
-}
-
 interface CreateEventUseCase {
-  execute(event: CreateEventDto): Promise<CreateEventResponse>;
+  execute(event: CreateEventDto): Promise<EventCreate>;
 }
 
 export class CreateEvent implements CreateEventUseCase {
   constructor(
     private readonly eventsRepository: EventsRepository,
     private readonly eventPublisher: EventPublisher
-  ) {}
+  ) { }
 
-  async execute(event: CreateEventDto): Promise<CreateEventResponse> {
+  async execute(event: CreateEventDto): Promise<EventCreate> {
     const newEvent = await this.eventsRepository.createEvent(event);
 
     const baseEvent = new BaseEvent(newEvent);
     const colorDecorator = new ColorDecoratorEvent(baseEvent);
     const decoratedEvent = colorDecorator.getEvent();
 
-    const notifications = await this.eventPublisher.publish({
+    const payload: EventChangePayload = {
       action: 'created',
       event: decoratedEvent,
       triggeredBy: {
@@ -38,11 +34,14 @@ export class CreateEvent implements CreateEventUseCase {
         email: event.user.email,
       },
       occurredAt: new Date(),
+    };
+
+    setImmediate(() => {
+      this.eventPublisher.publish(payload).catch(err => console.error('publish error', err));
     });
 
     return {
       event: decoratedEvent,
-      notifications,
     };
   }
 }

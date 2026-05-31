@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { PushService } from '../../insfrastructure/services/push.service';
+import { PushClient } from '../../config';
 import { envs } from '../../config';
 
 export class PushController {
-  private readonly pushService = new PushService();
+  private readonly pushService = new PushClient();
 
   getVapidKey = (_req: Request, res: Response): void => {
     res.json({ publicKey: envs.VAPID_PUBLIC_KEY });

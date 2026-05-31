@@ -3,10 +3,10 @@ import {
   EventObserver,
   ObserverResult,
 } from '../../domain';
-import { EmailService } from '../services/email.service';
+import { MailClient } from '../../config';
 
 export class EmailNotificationObserver implements EventObserver {
-  constructor(private readonly emailService: EmailService) {}
+  constructor(private readonly emailService: MailClient) { }
 
   async notify(payload: EventChangePayload): Promise<ObserverResult> {
     const { action, event, triggeredBy } = payload;

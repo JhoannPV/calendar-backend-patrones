@@ -7,5 +7,4 @@ export * from './mappers/user.mapper';
 export * from './mappers/events.mapper';
 export * from './observer/email-notification.observer';
 export * from './observer/push-notification.observer';
-export * from './observer/google-calendar.observer';
 export * from './observer/event-notification.factory';

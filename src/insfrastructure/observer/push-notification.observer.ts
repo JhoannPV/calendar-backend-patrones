@@ -1,8 +1,8 @@
 import { EventChangePayload, EventObserver, ObserverResult } from '../../domain';
-import { PushService } from '../services/push.service';
+import { PushClient } from '../../config';
 
 export class PushNotificationObserver implements EventObserver {
-  constructor(private readonly pushService: PushService) {}
+  constructor(private readonly pushService: PushClient) { }
 
   async notify(payload: EventChangePayload): Promise<ObserverResult> {
     const { action, event, triggeredBy } = payload;
