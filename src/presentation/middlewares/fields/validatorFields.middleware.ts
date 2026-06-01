@@ -37,6 +37,7 @@ export class ValidatorFieldsMiddleware {
             check('bgColor',  'Background color is required').not().isEmpty().run(req),
             check('category', 'Category is required').not().isEmpty().run(req),
             check('category', 'Category is invalid').isIn(['general', 'work', 'sports', 'family', 'travel']).run(req),
+            check('reminderStrategy', 'Reminder strategy is invalid').optional().isIn(['30min', '1h']).run(req),
         ];
 
         if (isSubEvent) {

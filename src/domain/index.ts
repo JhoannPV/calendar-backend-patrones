@@ -40,3 +40,7 @@ export * from './observer/event-change.types';
 export * from './observer/event-observer.interface';
 export * from './observer/event-publisher.interface';
 export * from './observer/event-notification.publisher';
+export * from './strategies/notification-schedule.strategy';
+export * from './strategies/notify-before-thirty-minutes.strategy';
+export * from './strategies/notify-before-one-hour.strategy';
+export * from './strategies/notification-scheduler.context';

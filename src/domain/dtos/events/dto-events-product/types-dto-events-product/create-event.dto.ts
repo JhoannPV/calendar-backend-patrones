@@ -1,4 +1,4 @@
-import { EventsDto } from '../../../..';
+import { EventsDto, NotificationStrategyType } from '../../../..';
 
 export class CreateEventDto extends EventsDto {
   private constructor(
@@ -10,6 +10,7 @@ export class CreateEventDto extends EventsDto {
     public category: string,
     user: { id: string; email: string },
     public parentId?: string | null,
+    public reminderStrategy?: NotificationStrategyType,
   ) {
     super(user);
   }
@@ -23,6 +24,7 @@ export class CreateEventDto extends EventsDto {
     category: string,
     user: { id: string; email: string },
     parentId?: string | null,
+    reminderStrategy?: NotificationStrategyType,
   ): [string?, CreateEventDto?] {
     if (!title) return ['Missing title'];
     if (!bgColor) return ['Missing bgColor'];
@@ -46,6 +48,10 @@ export class CreateEventDto extends EventsDto {
       }
     }
 
+    if (reminderStrategy && !['30min', '1h'].includes(reminderStrategy)) {
+      return ['Invalid reminder strategy'];
+    }
+
     return [undefined, new CreateEventDto(
       title,
       notes,
@@ -55,6 +61,7 @@ export class CreateEventDto extends EventsDto {
       category,
       user,
       parentId ?? null,
+      reminderStrategy,
     )];
   }
 }

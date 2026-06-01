@@ -1,4 +1,4 @@
-import { EventsDto } from '../../../..';
+import { EventsDto, NotificationStrategyType } from '../../../..';
 
 export class UpdateEventDto extends EventsDto {
     private constructor(
@@ -11,6 +11,7 @@ export class UpdateEventDto extends EventsDto {
         public category: string,
         user: { id: string; email: string },
         public parentId?: string | null,
+        public reminderStrategy?: NotificationStrategyType,
     ) {
         super(user);
     }
@@ -25,6 +26,7 @@ export class UpdateEventDto extends EventsDto {
         category: string,
         user:     { id: string; email: string },
         parentId?: string | null,
+        reminderStrategy?: NotificationStrategyType,
     ): [string?, UpdateEventDto?] {
         if (!id)       return ['Missing id'];
         if (!title)    return ['Missing title'];
@@ -49,6 +51,10 @@ export class UpdateEventDto extends EventsDto {
             }
         }
 
+        if (reminderStrategy && !['30min', '1h'].includes(reminderStrategy)) {
+            return ['Invalid reminder strategy'];
+        }
+
         return [undefined, new UpdateEventDto(
             id,
             title,
@@ -59,6 +65,7 @@ export class UpdateEventDto extends EventsDto {
             category,
             user,
             parentId ?? null,
+            reminderStrategy,
         )];
     }
 }

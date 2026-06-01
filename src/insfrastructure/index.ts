@@ -8,3 +8,4 @@ export * from './mappers/events.mapper';
 export * from './observer/email-notification.observer';
 export * from './observer/push-notification.observer';
 export * from './observer/event-notification.factory';
+export * from './strategies/event-reminder.service';

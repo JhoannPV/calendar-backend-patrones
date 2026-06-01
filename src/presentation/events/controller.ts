@@ -11,7 +11,7 @@ import {
     DeleteEventCascade,
     EventsRepository,
 } from '../../domain';
-import { EventNotificationFactory } from '../../insfrastructure';
+import { EventNotificationFactory, EventReminderService } from '../../insfrastructure';
 
 export class EventsController {
     private readonly createOperationDtoFactory = new CreateOperationDtoFactory();
@@ -50,7 +50,17 @@ export class EventsController {
 
         new CreateEvent(this.eventsRepository, EventNotificationFactory.createPublisher())
             .execute(createEventDto)
-            .then(event => res.status(201).json(event))
+            .then(event => {
+                new EventReminderService().execute(
+                    event.event,
+                    createEventDto.reminderStrategy ?? '30min',
+                    {
+                        id: createEventDto.user.id,
+                        email: createEventDto.user.email,
+                    }
+                );
+                res.status(201).json(event);
+            })
             .catch(error => this.handleError(error, res));
     };
 
@@ -64,7 +74,17 @@ export class EventsController {
 
         new UpdateEvent(this.eventsRepository, EventNotificationFactory.createPublisher())
             .execute(updateEventDto)
-            .then(event => res.status(200).json(event))
+            .then(event => {
+                new EventReminderService().execute(
+                    event.event,
+                    updateEventDto.reminderStrategy ?? '30min',
+                    {
+                        id: updateEventDto.user.id,
+                        email: updateEventDto.user.email,
+                    }
+                );
+                res.status(200).json(event);
+            })
             .catch(error => this.handleError(error, res));
     };
 
